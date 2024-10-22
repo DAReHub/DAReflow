@@ -72,7 +72,7 @@ x-airflow-common:
     _PIP_ADDITIONAL_REQUIREMENTS: "${_PIP_ADDITIONAL_REQUIREMENTS:-}"
     # The following line can be used to set a custom config file, stored in the local config folder
     # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
-    AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+#    AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   env_file:
     - .env
   volumes:
@@ -289,13 +289,15 @@ services:
         condition: service_completed_successfully
 
   docker-proxy:
-    image: bobrik/socat
+    build:
+      context: .
+      dockerfile: Dockerfile.socat
     command: "TCP4-LISTEN:2375,fork,reuseaddr UNIX-CONNECT:/var/run/docker.sock"
     restart: always
     ports:
       - "2376:2375"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.soc
 
 volumes:
   postgres-db-volume:

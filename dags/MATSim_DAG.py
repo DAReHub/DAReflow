@@ -75,6 +75,7 @@ with DAG(
         task_id='run_matsim',
         image="{{ dag_run.conf['MATSim_selection_image'] }}",
         container_name='airflow-matsim_' + start_date,
+        # cpus=0.1,
         auto_remove=True,
         docker_url='tcp://docker-proxy:2375',
         network_mode='bridge',

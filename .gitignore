@@ -163,3 +163,8 @@ cython_debug/
 
 airflow.cfg
 test_dags/
+logs/
+cache/
+plugins/
+notes/
+.*
