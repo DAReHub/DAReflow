@@ -25,18 +25,18 @@ def update_runs(dag_stage, params, output_path=None, **context):
     image_key = misc_utils.find_key_containing_string("selection_image", params)
 
     cursor.execute(
-        f"INSERT INTO runs (dag_stage, state, dag_id, run_id, params, scenario,  image, username, dag_start_time, trigger_type, output_directory) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+        f"INSERT INTO airflow_runs (dag_id, dag_stage, run_start_time, run_id, run_trigger_type, task_states, context_params, scenario_name, docker_image, airflow_username, output_destination) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
         (
-            dag_stage,
-            json.dumps(af_utils.get_all_tasks_status(context)),
             context["dag"].dag_id,
+            dag_stage,
+            context['dag_run'].start_date,
             context["run_id"],
+            context["run_id"].split("__")[0].split("_")[-1],
+            json.dumps(af_utils.get_all_tasks_status(context)),
             json.dumps(params),
             params["scenario_name"],
             params[image_key] if image_key is not None else None,
             af_utils.get_user(context["dag"].dag_id),
-            context['dag_run'].start_date,
-            context["run_id"].split("__")[0].split("_")[-1],
             output_path
         )
     )
