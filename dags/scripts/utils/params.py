@@ -69,9 +69,7 @@ class Parameters:
                 "matsim:15.0-2022w40",
                 type="string",
                 title="[MATSim] Docker Image",
-                description="Select a MATSim Docker image.",
-                # TODO: Dynamically load images
-                enum=["matsim:15.0-2022w40", "matsim:15.0-PR2396"],
+                description="Select a MATSim Docker image, as <name:tag>. See available images or upload your own (in .tar format) at docker-images bucket.",
             ),
             "MATSim_datapath_config": Param(
                 type="string",

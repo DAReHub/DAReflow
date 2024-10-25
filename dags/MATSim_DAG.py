@@ -10,6 +10,7 @@ import scripts.utils.postgres_utils as postgres_utils
 import scripts.utils.minio_utils as minio_utils
 import scripts.utils.params as params
 import scripts.utils.af_utils as af_utils
+import scripts.utils.docker_utils as docker_utils
 
 
 class CustomDockerOperator(DockerOperator):
@@ -70,6 +71,14 @@ with DAG(
         }
     )
 
+    prepare_image = PythonOperator(
+        task_id='prepare_image',
+        python_callable=docker_utils.prep_image,
+        op_kwargs={
+            "params": "{{ dag_run.conf }}",
+        }
+    )
+
     run_matsim = CustomDockerOperator(
         api_version='auto',
         task_id='run_matsim',
@@ -127,3 +136,4 @@ with DAG(
 
     # SEQUENCE
     record_run_start >> setup_environment >> stage_data >> run_matsim >> post_data >> record_run_end
+    record_run_start >> prepare_image >> run_matsim
