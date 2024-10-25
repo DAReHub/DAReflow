@@ -66,11 +66,12 @@ class Parameters:
     def matsim(self, exclude=None, changes=None):
         data = {
             "MATSim_selection_image": Param(
-                "matsim-docker-matsim",
+                "matsim:15.0-2022w40",
                 type="string",
                 title="[MATSim] Docker Image",
                 description="Select a MATSim Docker image.",
-                enum=["matsim-docker-matsim", "matsimv2"],
+                # TODO: Dynamically load images
+                enum=["matsim:15.0-2022w40", "matsim:15.0-PR2396"],
             ),
             "MATSim_datapath_config": Param(
                 type="string",

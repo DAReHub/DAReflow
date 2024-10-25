@@ -297,7 +297,7 @@ services:
     ports:
       - "2376:2375"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.soc
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   postgres-db-volume:
