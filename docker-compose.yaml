@@ -123,7 +123,7 @@ services:
     <<: *airflow-common
     command: webserver
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
@@ -275,7 +275,7 @@ services:
     profiles:
       - flower
     ports:
-      - "5555:5555"
+      - "127.0.0.1:5555:5555"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
       interval: 30s
@@ -295,7 +295,7 @@ services:
     command: "TCP4-LISTEN:2375,fork,reuseaddr UNIX-CONNECT:/var/run/docker.sock"
     restart: always
     ports:
-      - "2376:2375"
+      - "127.0.0.1:2376:2375"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
