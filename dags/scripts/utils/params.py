@@ -126,10 +126,10 @@ class Parameters:
                 title="[floodEvent] rasters directory",
                 description=f"Path to the DIRECTORY containing flood rasters. These rasters must be in '.tif' format and numbered sequentially e.g. 0.tif, 1.tif, 2.tif etc. Include bucket name. E.g. {os.getenv('FLOODEVENT_DATADIR_FLOODRASTERS_DEFAULT')}"
             ),
-            "floodEvent_datadir_network": Param(
+            "floodEvent_datapath_network": Param(
                 type="string",
-                title="[floodEvent] network directory",
-                description=f"Path to the DIRECTORY containing the network shapefile. Include in this directory supporting files '.cpg', '.dbf', '.prj', '.qmd', and '.shx'. Include bucket name. E.g. {os.getenv('FLOODEVENT_DATADIR_NETWORK_DEFAULT')}"
+                title="[floodEvent] network path",
+                description=f"Path to the network.gpkg file. Include bucket name. E.g. {os.getenv('FLOODEVENT_DATADIR_NETWORK_DEFAULT')}"
             )
         }
         return self._modify_items(data, exclude, changes)

@@ -36,7 +36,6 @@ with DAG(
     # PATHS
     airflow_input_run = os.getenv("AIRFLOW_FLOODEVENT_INPUT") + start_date
     airflow_input_rasters = airflow_input_run + "/flood-rasters/"
-    airflow_input_network = airflow_input_run + "/network/"
     airflow_output_run = os.getenv("AIRFLOW_FLOODEVENT_OUTPUT") + start_date
     airflow_output_flood_network = airflow_output_run + "/flood_network/"
     airflow_output_networkChangeEvemts = airflow_output_run + "/networkChangeEvents/"
@@ -57,7 +56,7 @@ with DAG(
 
     setup_environment = BashOperator(
         task_id='setup_environment',
-        bash_command=f'mkdir {airflow_input_run} {airflow_input_rasters} {airflow_input_network} {airflow_output_run} {airflow_output_flood_network} {airflow_output_networkChangeEvemts}'
+        bash_command=f'mkdir {airflow_input_run} {airflow_input_rasters} {airflow_output_run} {airflow_output_flood_network} {airflow_output_networkChangeEvemts}'
     )
 
     stage_data = PythonOperator(
@@ -85,7 +84,7 @@ with DAG(
         provide_context=True,
         op_kwargs={
             "config_filepath": airflow_input_run + '/config.json',
-            "network_dir": airflow_input_network,
+            "network_filepath": airflow_input_run + '/network.gpkg',
             "floodmap_dir": airflow_input_rasters,
             "output_dir": airflow_output_flood_network
         }

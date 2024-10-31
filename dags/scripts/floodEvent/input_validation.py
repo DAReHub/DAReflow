@@ -3,8 +3,9 @@ import os
 
 
 def network(filepath):
-    if not os.listdir(filepath):
-        raise Exception("No network found - check your input paths")
+    print("checking for:", filepath)
+    if not os.path.isfile(filepath):
+        raise Exception("No network found - check your input path")
 
 
 def floodRasters(filepath):
@@ -69,7 +70,7 @@ def floodRasters(filepath):
 
 def main(filepath):
     floodRasters(filepath + "/flood-rasters/")
-    network(filepath + "/network/")
+    network(filepath + '/network.gpkg')
 
 
 if __name__ == "__main__":

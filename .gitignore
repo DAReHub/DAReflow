@@ -168,4 +168,5 @@ cache/
 plugins/
 notes/
 .*
-config/*
+config/
+dags/scripts/floodEvent/test_data/

@@ -22,8 +22,8 @@ def load_network(filepath, CRS):
     with fiona.open(filepath) as src:
         geometries = [shape(feature['geometry']) for feature in src]
         properties = [feature['properties'] for feature in src]
-    df = gpd.GeoDataFrame(properties, geometry=geometries)
-    return df.set_crs(CRS)
+    gdf = gpd.GeoDataFrame(properties, geometry=geometries)
+    return gdf.set_crs(CRS)
 
 
 def exlude_network_modes(df, excluded_modes):
@@ -97,13 +97,8 @@ def export_csv(gdf, filepath):
     df.to_csv(filepath + ".csv", index=False)
 
 
-def main(config_filepath, network_dir, floodmap_dir, output_dir):
+def main(config_filepath, network_filepath, floodmap_dir, output_dir):
     config = load_config(config_filepath)["flood_network"]
-
-    # Handles any network shapefile name
-    for filename in os.listdir(network_dir):
-        if filename.endswith(".shp"):
-            network_filepath = network_dir + filename
 
     gdf_network = prepare_network(
         network_filepath,
@@ -135,6 +130,6 @@ if __name__ == "__main__":
     main(
         config_filepath="",
         floodmap_dir="",
-        network_dir="",
+        network_filepath="",
         output_dir=""
     )
