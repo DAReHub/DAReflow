@@ -112,7 +112,7 @@ with DAG(
 
     post_data = PythonOperator(
         task_id='post_data',
-        python_callable=minio_utils.upload_data,
+        python_callable=minio_utils.post_outputs,
         provide_context=True,
         dag=dag,
         op_kwargs={

@@ -168,3 +168,4 @@ cache/
 plugins/
 notes/
 .*
+config/*
