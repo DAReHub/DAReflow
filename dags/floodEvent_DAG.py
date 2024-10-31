@@ -46,7 +46,7 @@ with DAG(
     # TASKS
     record_run_start = PythonOperator(
         task_id='record_run_start',
-        python_callable=postgres_utils.update_runs,
+        python_callable=postgres_utils.submit_metadata,
         provide_context=True,
         op_kwargs={
             "dag_stage": "start",
@@ -128,7 +128,7 @@ with DAG(
 
     record_run_end = PythonOperator(
         task_id='record_run_end',
-        python_callable=postgres_utils.update_runs,
+        python_callable=postgres_utils.submit_metadata,
         provide_context=True,
         # trigger_rule=TriggerRule.ALL_DONE,
         op_kwargs={
