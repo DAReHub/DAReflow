@@ -3,4 +3,4 @@ fiona
 pandas
 geopandas
 shapely
-rasterstats
+exactextract
