@@ -98,7 +98,7 @@ with DAG(
         op_kwargs={
             "bucket": output_bucket,
             "src": airflow_output_flood_network,
-            "dst": output_path + "/flood_network/",
+            "dst": output_path,
         }
     )
 
@@ -108,7 +108,7 @@ with DAG(
         provide_context=True,
         op_kwargs={
             "config_filepath": airflow_input_run + '/config.json',
-            "input_dir": airflow_output_flood_network,
+            "input_filepath": airflow_output_flood_network + 'flooded_network.csv',
             "output_dir": airflow_output_networkChangeEvemts
         }
     )
@@ -121,7 +121,7 @@ with DAG(
         op_kwargs={
             "bucket": output_bucket,
             "src": airflow_output_networkChangeEvemts,
-            "dst": output_path + "/networkChangeEvents/",
+            "dst": output_path,
         }
     )
 
