@@ -142,8 +142,8 @@ def main(config_filepath, network_filepath, floodmap_dir, output_dir):
 
 if __name__ == "__main__":
     main(
-        config_filepath="cache/floodEvent/input/2024-11-05_11-07-34.311/config.json",
-        floodmap_dir="cache/floodEvent/input/2024-11-05_11-07-34.311/flood-rasters/",
-        network_filepath="cache/floodEvent/input/2024-11-05_11-07-34.311/network.gpkg",
-        output_dir="cache/floodEvent/output/2024-11-05_11-07-34.311/flood_network/"
+        config_filepath="",
+        floodmap_dir="",
+        network_filepath="",
+        output_dir=""
     )
