@@ -5,12 +5,14 @@
 
 import os
 import fiona
-import pyogrio  # utilised for faster exporting
-import pandas as pd
 import geopandas as gpd
 from shapely.geometry import shape
 from exactextract import exact_extract
 import json
+
+# unreferenced but used by other packages
+import pyogrio  # for faster exporting
+import rasterio # for loading in rasters with exactextract
 
 
 def load_config(filepath):
@@ -49,6 +51,7 @@ def prepare_network(network_filepath, excluded_modes, network_buffer_factor, CRS
 
 def zonal_statistics(floodmap, network, statistic):
     print("calculating zonal statistics")
+    print(floodmap)
     gdf = exact_extract(
         rast=floodmap,
         vec=network,
@@ -139,8 +142,8 @@ def main(config_filepath, network_filepath, floodmap_dir, output_dir):
 
 if __name__ == "__main__":
     main(
-        config_filepath="",
-        floodmap_dir="",
-        network_filepath="",
-        output_dir=""
+        config_filepath="cache/floodEvent/input/2024-11-05_11-07-34.311/config.json",
+        floodmap_dir="cache/floodEvent/input/2024-11-05_11-07-34.311/flood-rasters/",
+        network_filepath="cache/floodEvent/input/2024-11-05_11-07-34.311/network.gpkg",
+        output_dir="cache/floodEvent/output/2024-11-05_11-07-34.311/flood_network/"
     )

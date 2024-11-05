@@ -4,3 +4,5 @@ pandas
 geopandas
 shapely
 exactextract
+pyogrio
+rasterio
