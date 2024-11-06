@@ -129,7 +129,7 @@ class Parameters:
             "floodEvent_datapath_network": Param(
                 type="string",
                 title="[floodEvent] network path",
-                description=f"Path to the network.gpkg file. Include bucket name. E.g. {os.getenv('FLOODEVENT_DATADIR_NETWORK_DEFAULT')}"
+                description=f"Path to the network.gpkg file. Include bucket name. E.g. {os.getenv('FLOODEVENT_DATAPATH_NETWORK_DEFAULT')}"
             )
         }
         return self._modify_items(data, exclude, changes)
