@@ -49,7 +49,7 @@ def prepare_network(network_filepath, excluded_modes, network_buffer_factor, CRS
     return buffer_network(gdf, network_buffer_factor)
 
 
-def zonal_statistics(floodmap_filepaths, network, statistic):
+def zonal_statistics(floodmap_filepaths, network, statistic, extension):
     print("calculating zonal statistics")
     ngdf = network[['ID', 'geometry']].copy()
     gdf = exact_extract(
@@ -63,6 +63,10 @@ def zonal_statistics(floodmap_filepaths, network, statistic):
         # progress=True
     )
     merged = network.merge(gdf.drop(columns='geometry'), on="ID", how="inner")
+    # if single file processed, column name will be just <statistic>. Add filename
+    if statistic in merged.columns:
+        filename = floodmap_filepaths[0].split("/")[-1].replace(extension, "")
+        merged = merged.rename(columns={statistic: filename + "_" + statistic})
     return gpd.GeoDataFrame(merged, geometry=gdf.geometry)
 
 
@@ -116,6 +120,11 @@ def export_csv(gdf, filepath):
 
 
 def main(config_filepath, network_filepath, floodmap_dir, output_dir):
+    if not floodmap_dir.endswith("/"):
+        floodmap_dir += "/"
+    if not output_dir.endswith("/"):
+        output_dir += "/"
+
     config = load_config(config_filepath)["flood_network"]
     filepaths = [floodmap_dir + file for file in os.listdir(floodmap_dir) if
                  file.endswith(config["extension"])]
@@ -126,7 +135,7 @@ def main(config_filepath, network_filepath, floodmap_dir, output_dir):
         config["network_buffer_factor"],
         config["CRS"]
     )
-    gdf = zonal_statistics(filepaths, gdf_network, config["link_depth"])
+    gdf = zonal_statistics(filepaths, gdf_network, config["link_depth"], config["extension"])
     gdf = vehicle_velocity(gdf, config["link_depth"])
 
     output = output_dir + "flooded_network"

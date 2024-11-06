@@ -108,7 +108,7 @@ with DAG(
         provide_context=True,
         op_kwargs={
             "config_filepath": airflow_input_run + '/config.json',
-            "input_filepath": airflow_output_flood_network + 'flooded_network.csv',
+            "flood_network_csv_filepath": airflow_output_flood_network + 'flooded_network.csv',
             "output_dir": airflow_output_networkChangeEvemts
         }
     )

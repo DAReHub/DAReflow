@@ -51,14 +51,17 @@ def sort_filenames(files):
     return sorted(files, key=lambda x: int(re.search(r'_T(\d+)_', x).group(1)))
 
 
-def main(config_filepath, input_filepath, output_dir):
+def main(config_filepath, flood_network_csv_filepath, output_dir):
+    if not output_dir.endswith("/"):
+        output_dir += "/"
+
     config = load_config(config_filepath)["generate_changeEvents"]
 
     with open(output_dir + "networkChangeEvents.xml", "w") as writefile:
         write_headers(writefile)
         current_time = config["event_start_time"]
 
-        dataframe = load_df(input_filepath, config)
+        dataframe = load_df(flood_network_csv_filepath, config)
         velocity_cols = [col for col in dataframe.columns if col.endswith("_" + config["velocity_column"])]
         velocity_cols = sort_filenames(velocity_cols)
 
@@ -88,6 +91,6 @@ def main(config_filepath, input_filepath, output_dir):
 if __name__ == "__main__":
     main(
         config_filepath="",
-        input_filepath="",
+        flood_network_csv_filepath="",
         output_dir=""
     )
