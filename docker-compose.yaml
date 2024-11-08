@@ -62,6 +62,8 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__CORE__TEST_CONNECTION: Enabled
+    AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: True
+    AIRFLOW__WEBSERVER__PROXY_FIX_X_PORT: 3
     # yamllint disable rule:line-length
     # Use simple http server on scheduler for health checks
     # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
@@ -123,7 +125,7 @@ services:
     <<: *airflow-common
     command: webserver
     ports:
-      - "127.0.0.1:8080:8080"
+      - "8080:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
@@ -298,6 +300,17 @@ services:
       - "127.0.0.1:2376:2375"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+  reverse-proxy:
+    image: nginx:lastest
+    ports:
+      - "8443:443"
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${AIRFLOW_PROJ_DIR:-.}/certs/public.crt:/etc/ssl/certs/public.crt:ro
+      - ${AIRFLOW_PROJ_DIR:-.}/certs/private.key:/etc/ssl/private/private.key:ro
+    depends_on:
+      - airflow-webserver
 
 volumes:
   postgres-db-volume:

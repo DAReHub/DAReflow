@@ -170,3 +170,5 @@ notes/
 .*
 config/
 dags/scripts/floodEvent/test_data/
+certs
+nginx
