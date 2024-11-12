@@ -1,16 +1,18 @@
 import os
+import sys
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from airflow.utils.trigger_rule import TriggerRule
 
 import scripts.utils.af_utils as af_utils
 import scripts.utils.minio_utils as minio_utils
 import scripts.utils.postgres_utils as postgres_utils
 import scripts.utils.params as params
-import scripts.floodEvent.flood_network as flood_network
-import scripts.floodEvent.generate_changeEvents as generate_changeEvents
-import scripts.floodEvent.input_validation as input_validation
+
+sys.path.append("/opt/airflow/modules/gis-python")
+import flood_network
+import generate_changeEvents
+import input_validation
 
 parameters = params.Parameters()
 

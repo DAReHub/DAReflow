@@ -83,6 +83,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/cache:/opt/airflow/cache
+    - ${MODULES_DIR}:/opt/airflow/modules
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -302,7 +303,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   reverse-proxy:
-    image: nginx:lastest
+    image: nginx:latest
     ports:
       - "8443:443"
     volumes:
