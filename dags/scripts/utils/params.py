@@ -74,7 +74,7 @@ class Parameters:
             "MATSim_datapath_config": Param(
                 type="string",
                 title="[MATSim] config path",
-                description=f"PATH to the config.xml file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_CONFIG_DEFAULT')}. !! Filepaths referenced within the config will be overwritten by any filepaths defined in this form !!"
+                description=f"PATH to the config.xml file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_CONFIG_DEFAULT')}. !! Filepaths referenced within the config will be overwritten by any filepaths defined in this form. Config params which also define system performance (e.g. numberOfThreads) are also manipulated to suit the host system !!"
             ),
             "MATSim_datapath_inputNetworkFile": Param(
                 type="string",

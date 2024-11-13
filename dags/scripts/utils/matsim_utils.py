@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 from pathlib import Path
-import os
+from airflow.models import Variable
 
 def configure_config(params, input_dir):
     filepath = input_dir + '/config.xml'
@@ -23,7 +23,7 @@ def configure_config(params, input_dir):
     }
 
     sys_tags = {
-        "numberOfThreads": os.getenv("MATSIM_THREADS"),
+        "numberOfThreads": Variable.get("MATSIM_THREADS"),
         "outputDirectory": "./output"
     }
 
