@@ -3,6 +3,7 @@ import sys
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
+from airflow.models import Variable
 
 import scripts.utils.af_utils as af_utils
 import scripts.utils.minio_utils as minio_utils
@@ -24,7 +25,7 @@ with DAG(
     dag_id='floodEvent',
     description='Process a flooding event on the network',
     default_args=default_args,
-    max_active_runs=10,
+    max_active_runs=Variable.get("FLOODEVENT_MAX_ACTIVE_RUNS"),
     schedule=None,
     params=parameters.default_params() | parameters.floodEvent(),
     render_template_as_native_obj=True,
