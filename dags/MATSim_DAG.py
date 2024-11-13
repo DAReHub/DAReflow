@@ -4,6 +4,7 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 from docker.types import Mount
 import os
+from airflow.models import Variable
 
 import scripts.utils.postgres_utils as postgres_utils
 import scripts.utils.minio_utils as minio_utils
@@ -27,7 +28,7 @@ with DAG(
     dag_id='MATSim',
     description='Run MATSim',
     default_args=default_args,
-    max_active_runs=1,
+    max_active_runs=Variable.get("MATSIM_MAX_ACTIVE_RUNS"),
     schedule=None,
     params=parameters.default_params() | parameters.matsim(),
     render_template_as_native_obj=True,
