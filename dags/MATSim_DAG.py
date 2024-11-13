@@ -2,7 +2,6 @@ from airflow import DAG
 from airflow.providers.docker.operators.docker import DockerOperator
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
-from airflow.utils.trigger_rule import TriggerRule
 from docker.types import Mount
 import os
 
@@ -11,6 +10,7 @@ import scripts.utils.minio_utils as minio_utils
 import scripts.utils.params as params
 import scripts.utils.af_utils as af_utils
 import scripts.utils.docker_utils as docker_utils
+import scripts.utils.matsim_utils as matsim_utils
 
 
 class CustomDockerOperator(DockerOperator):
@@ -68,6 +68,15 @@ with DAG(
         op_kwargs={
             "params": "{{ dag_run.conf }}",
             "dst": airflow_input_run,
+        }
+    )
+
+    configure_config = PythonOperator(
+        task_id='configure_config',
+        python_callable=matsim_utils.configure_config,
+        op_kwargs={
+            "params": "{{ dag_run.conf }}",
+            "input_dir": airflow_input_run
         }
     )
 
@@ -135,5 +144,5 @@ with DAG(
     )
 
     # SEQUENCE
-    record_run_start >> setup_environment >> stage_data >> run_matsim >> post_data >> record_run_end
+    record_run_start >> setup_environment >> stage_data >> configure_config >> run_matsim >> post_data >> record_run_end
     record_run_start >> prepare_image >> run_matsim

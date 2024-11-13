@@ -74,42 +74,62 @@ class Parameters:
             "MATSim_datapath_config": Param(
                 type="string",
                 title="[MATSim] config path",
-                description=f"PATH to the config.xml file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_CONFIG_DEFAULT')}"
+                description=f"PATH to the config.xml file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_CONFIG_DEFAULT')}. !! Filepaths referenced within the config will be overwritten by any filepaths defined in this form !!"
             ),
-            "MATSim_datapath_network": Param(
+            "MATSim_datapath_inputNetworkFile": Param(
                 type="string",
-                title="[MATSim] network path",
+                title="[MATSim] inputNetworkFile path",
                 description=f"PATH to the network .[xml, xml.gz] file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_NETWORK_DEFAULT')}"
             ),
-            "MATSim_datapath_plans": Param(
+            "MATSim_datapath_inputPlansFile": Param(
                 type="string",
-                title="[MATSim] plans path",
+                title="[MATSim] inputPlansFile path",
                 description=f"PATH to the plans .[xml, xml.gz] file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_PLANS_DEFAULT')}"
             ),
-            "MATSim_datapath_transitSchedule": Param(
-                type=["null", "string"],
-                title="[MATSim] transit schedule path",
-                description=f"PATH to the transit schedule .[xml, xml.gz] file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_TRANSITSCHEDULE_DEFAULT')}"
-            ),
-            "MATSim_datapath_transitVehicles": Param(
-                type=["null", "string"],
-                title="[MATSim] transit vehicles path",
-                description=f"PATH to the transit vehicles .xml file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_TRANSITVEHICLES_DEFAULT')}"
-            ),
-            "MATSim_datapath_motor_veh_counts": Param(
-                type=["null", "string"],
-                title="[MATSim] vehicle motor counts path",
+            "MATSim_datapath_inputCountsFile": Param(
+                type=["string"],
+                title="[MATSim] inputCountsFile path",
                 description=f"PATH to the motor counts .xml file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_MOTORVEHCOUNTS_DEFAULT')}"
             ),
-            "MATSim_datapath_cyclePedal_veh_counts": Param(
+            "MATSim_datapath_vehiclesFile": Param(
                 type=["null", "string"],
-                title="[MATSim] vehicle PedalCycle counts path",
-                description=f"PATH to the PedalCycle counts .xml file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_CYCLEPEDALVEHCOUNTS_DEFAULT')}"
+                title="[MATSim] transit vehiclesFile path"
             ),
-            "MATSim_datapath_networkChangeEvents": Param(
+            "MATSim_datapath_inputChangeEventsFile": Param(
                 type=["null", "string"],
-                title="[MATSim] network change events path",
-                description=f"PATH to the network change events .xml file for MATSim (include bucket name). E.g. {os.getenv('MATSIM_DATAPATH_NETWORKCHANGEEVENTS_DEFAULT')}"
+                title="[MATSim] inputChangeEventsFile path"
+            ),
+            "MATSim_datapath_transitScheduleFile": Param(
+                type=["null", "string"],
+                title="[MATSim] transitScheduleFile path"
+            ),
+            "MATSim_datapath_transitLinesAttributesFile": Param(
+                type=["null", "string"],
+                title="[MATSim] transitLinesAttributesFile"
+            ),
+            "MATSim_datapath_transitStopsAttributesFile": Param(
+                type=["null", "string"],
+                title="[MATSim] transitStopsAttributesFile"
+            ),
+            "MATSim_datapath_laneDefinitionsFile": Param(
+                type=["null", "string"],
+                title="[MATSim] laneDefinitionsFile"
+            ),
+            "MATSim_datapath_inputPersonAttributesFile": Param(
+                type=["null", "string"],
+                title="[MATSim] inputPersonAttributesFile"
+            ),
+            "MATSim_datapath_inputAlightCountsFile": Param(
+                type=["null", "string"],
+                title="[MATSim] inputAlightCountsFile"
+            ),
+            "MATSim_datapath_inputBoardCountsFile": Param(
+                type=["null", "string"],
+                title="[MATSim] inputBoardCountsFile"
+            ),
+            "MATSim_datapath_inputOccupancyCountsFile": Param(
+                type=["null", "string"],
+                title="[MATSim] inputOccupancyCountsFile"
             )
         }
         return self._modify_items(data, exclude, changes)
