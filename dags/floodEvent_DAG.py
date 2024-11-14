@@ -25,7 +25,7 @@ with DAG(
     dag_id='floodEvent',
     description='Process a flooding event on the network',
     default_args=default_args,
-    max_active_runs=Variable.get("FLOODEVENT_MAX_ACTIVE_RUNS"),
+    max_active_runs=int(Variable.get("FLOODEVENT_MAX_ACTIVE_RUNS")),
     schedule=None,
     params=parameters.default_params() | parameters.floodEvent(),
     render_template_as_native_obj=True,

@@ -28,7 +28,7 @@ with DAG(
     dag_id='MATSim',
     description='Run MATSim',
     default_args=default_args,
-    max_active_runs=Variable.get("MATSIM_MAX_ACTIVE_RUNS"),
+    max_active_runs=int(Variable.get("MATSIM_MAX_ACTIVE_RUNS")),
     schedule=None,
     params=parameters.default_params() | parameters.matsim(),
     render_template_as_native_obj=True,
