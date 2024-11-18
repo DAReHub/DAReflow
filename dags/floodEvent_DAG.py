@@ -10,7 +10,7 @@ import scripts.utils.minio_utils as minio_utils
 import scripts.utils.postgres_utils as postgres_utils
 import scripts.utils.params as params
 
-sys.path.append("/opt/airflow/modules/gis-python")
+sys.path.append("/opt/airflow/modules/" + Variable.get("FLOODEVENT_MODULE"))
 import flood_network
 import generate_changeEvents
 import input_validation
@@ -54,6 +54,7 @@ with DAG(
             "dag_stage": "start",
             "params": "{{ dag_run.conf }}",
             "output_path": output_path,
+            "module_name": Variable.get("FLOODEVENT_MODULE")
         }
     )
 
@@ -137,6 +138,7 @@ with DAG(
             "dag_stage": "end",
             "params": "{{ dag_run.conf }}",
             "output_path": output_path,
+            "module_name": Variable.get("FLOODEVENT_MODULE")
         }
     )
 
