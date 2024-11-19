@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
+from airflow.models import Variable
 
 import scripts.utils.os_utils as os_utils
 
@@ -29,7 +30,7 @@ clean_cache = PythonOperator(
     dag=dag,
     op_kwargs={
         "base_dir": "/opt/airflow/cache/",
-        "days_to_keep": 2
+        "days_to_keep": int(Variable.get("STAGED_DATA_RETENTION"))
     }
 )
 
