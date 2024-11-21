@@ -156,7 +156,7 @@ class Parameters:
 
     def floodEvent_matsim(self):
         new_params = {
-            "MATSim_datapath_networkChangeEvents": Param(
+            "MATSim_datapath_inputChangeEventsFile": Param(
                 default=os.getenv('MATSIM_DATAPATH_NETWORKCHANGEEVENTS_FLOODEVENT'),
                 type="string",
                 title="[MATSim-CHAIN] LEAVE AS DEFAULT",

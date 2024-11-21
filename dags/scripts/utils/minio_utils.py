@@ -99,7 +99,7 @@ class MinioPython:
                 print(f"Uploaded {local_file} to {minio_file} in bucket {bucket}")
 
 
-def get_inputs(params, dst, **context):
+def get_inputs(params, dst, data_interval_start=None, **context):
     conn = MinioS3Hook(os.getenv("MINIO_AIRFLOW_CONN_ID"))
 
     dag_id = context["dag"].dag_id
@@ -126,11 +126,7 @@ def get_inputs(params, dst, **context):
         if "<user>/<scenario>/<start_date>" in param_path:
             param_path = param_path.replace("<user>", af_utils.get_user(dag_id))
             param_path = param_path.replace("<scenario>", scenario_name)
-
-            start_date = context['dag_run'].start_date
-            start_date = start_date.strftime("%Y-%m-%d_%H-%M-%S") + f".{start_date.microsecond // 1000:03d}"
-            param_path = param_path.replace("<start_date>", start_date)
-
+            param_path = param_path.replace("<start_date>", data_interval_start)
             print("new:", param_path)
 
         # Download a single file from a filepath

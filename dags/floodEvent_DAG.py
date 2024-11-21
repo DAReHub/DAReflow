@@ -4,6 +4,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 from airflow.models import Variable
+from airflow.utils.trigger_rule import TriggerRule
 
 import scripts.utils.af_utils as af_utils
 import scripts.utils.minio_utils as minio_utils
@@ -32,7 +33,7 @@ with DAG(
     tags=["flood-event", "processor"]
 ) as dag:
 
-    start_date = "{{ dag_run.start_date.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(dag_run.start_date.microsecond // 1000) }}"
+    start_date = "{{ data_interval_start.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(data_interval_start.microsecond // 1000) }}"
     user = af_utils.get_user('floodEvent')
     scenario = "{{ dag_run.conf['scenario_name'] }}"
 
@@ -133,7 +134,6 @@ with DAG(
         task_id='record_run_end',
         python_callable=postgres_utils.submit_metadata,
         provide_context=True,
-        # trigger_rule=TriggerRule.ALL_DONE,
         op_kwargs={
             "dag_stage": "end",
             "params": "{{ dag_run.conf }}",
@@ -142,6 +142,13 @@ with DAG(
         }
     )
 
+    dag_run_state = PythonOperator(
+        task_id='dag_run_state',
+        python_callable=af_utils.dag_run_status,
+        provide_context=True,
+        trigger_rule=TriggerRule.ALL_DONE,
+    )
+
     # SEQUENCE
-    record_run_start >> setup_environment >> stage_data >> validate_inputs >> flood_network >> generate_networkChangeEvents >> post_changeEvents_data >> record_run_end
+    record_run_start >> setup_environment >> stage_data >> validate_inputs >> flood_network >> generate_networkChangeEvents >> post_changeEvents_data >> record_run_end >> dag_run_state
     flood_network >> post_flood_network_data >> record_run_end

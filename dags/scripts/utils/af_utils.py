@@ -2,10 +2,14 @@ from airflow.models.log import Log
 from airflow.utils.db import create_session
 from airflow.datasets.metadata import Metadata
 from airflow.exceptions import AirflowSkipException
+from airflow.exceptions import AirflowException
 from airflow.models.dagrun import DagRun
 from airflow.utils.state import State
 from airflow.models import TaskInstance
 from airflow.utils.db import provide_session
+from airflow.models import Variable
+import time
+import scripts.utils.minio_utils as minio_utils
 
 
 def get_user(dag_id):
@@ -39,6 +43,58 @@ def stop_all_dag_tasks(dag_ids, **kwargs):
         except:
             print(f"No dag_id named {dag} found")
             continue
+
+
+def periodic_copier(bucket, src, dst, monitored_task, **context):
+    interval = int(Variable.get("PERIODIC_COPY_INTERVAL"))
+    print(f"Outputs will be uploaded to the database every {interval} seconds "
+          f"(not accounting for upload durations). Please check output "
+          f"timestamps to ensure you are working with an up to date copy.")
+
+    started = False
+
+    while True:
+        time.sleep(5)
+        all_task_states = get_all_tasks_status(context)
+        task = all_task_states[monitored_task]
+
+        if task is None:
+            continue
+
+        elif task == "running":
+            if started is False:
+                start_time = int(time.time())
+                started = True
+                continue
+
+            current_time = int(time.time())
+            if (current_time - start_time) < interval:
+                continue
+
+            print("UPLOADING")
+            try:
+                minio_utils.post_outputs(bucket, src, dst)
+            except Exception as e:
+                print("UPLOAD FAILED -> ", e)
+
+            start_time = int(time.time())
+            print("SLEEPING")
+
+        else:
+            break
+
+
+def dag_run_status(excluded_tasks=None, **context):
+    states = get_all_tasks_status(context)
+    # Apply test to all tasks except for this one and excluded_tasks
+    states.pop("dag_run_state")
+    if excluded_tasks is not None:
+        for task in excluded_tasks:
+            states.pop(task)
+    print("states", states)
+    failed = {key: value for key, value in states.items() if value != "success"}
+    if failed:
+        raise AirflowException
 
 
 def check_upstream_state(task_id, context):

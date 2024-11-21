@@ -5,6 +5,7 @@ from airflow.operators.bash import BashOperator
 from docker.types import Mount
 import os
 from airflow.models import Variable
+from airflow.utils.trigger_rule import TriggerRule
 
 import scripts.utils.postgres_utils as postgres_utils
 import scripts.utils.minio_utils as minio_utils
@@ -35,7 +36,7 @@ with DAG(
     tags=["MATSim", "processor"]
 ) as dag:
 
-    start_date = "{{ dag_run.start_date.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(dag_run.start_date.microsecond // 1000) }}"
+    start_date = "{{ data_interval_start.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(data_interval_start.microsecond // 1000) }}"
     user = af_utils.get_user('MATSim')
     scenario = "{{ dag_run.conf['scenario_name'] }}"
 
@@ -69,6 +70,7 @@ with DAG(
         op_kwargs={
             "params": "{{ dag_run.conf }}",
             "dst": airflow_input_run,
+            "data_interval_start": start_date
         }
     )
 
@@ -86,6 +88,19 @@ with DAG(
         python_callable=docker_utils.prep_image,
         op_kwargs={
             "params": "{{ dag_run.conf }}",
+        }
+    )
+
+    periodic_post = PythonOperator(
+        task_id='periodic_post',
+        python_callable=af_utils.periodic_copier,
+        provide_context=True,
+        dag=dag,
+        op_kwargs={
+            "bucket": output_bucket,
+            "src": airflow_output_run,
+            "dst": output_path,
+            "monitored_task": "run_matsim"
         }
     )
 
@@ -120,10 +135,11 @@ with DAG(
         },
     )
 
-    post_data = PythonOperator(
-        task_id='post_data',
+    post_final_data = PythonOperator(
+        task_id='post_final_data',
         python_callable=minio_utils.post_outputs,
         provide_context=True,
+        trigger_rule=TriggerRule.ALL_DONE,
         dag=dag,
         op_kwargs={
             "bucket": output_bucket,
@@ -136,7 +152,6 @@ with DAG(
         task_id='record_run_end',
         python_callable=postgres_utils.submit_metadata,
         provide_context=True,
-        # trigger_rule=TriggerRule.ALL_DONE,
         op_kwargs={
             "dag_stage": "end",
             "params": "{{ dag_run.conf }}",
@@ -144,6 +159,16 @@ with DAG(
         }
     )
 
+    dag_run_state = PythonOperator(
+        task_id='dag_run_state',
+        python_callable=af_utils.dag_run_status,
+        provide_context=True,
+        trigger_rule=TriggerRule.ALL_DONE,
+        op_kwargs={
+            "excluded_tasks": ["periodic_post"]
+        }
+    )
+
     # SEQUENCE
-    record_run_start >> setup_environment >> stage_data >> configure_config >> run_matsim >> post_data >> record_run_end
-    record_run_start >> prepare_image >> run_matsim
+    record_run_start >> setup_environment >> stage_data >> configure_config >> prepare_image >> run_matsim >> post_final_data >> record_run_end >> dag_run_state
+    prepare_image >> periodic_post >> post_final_data

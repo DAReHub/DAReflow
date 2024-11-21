@@ -51,6 +51,13 @@ with DAG(
         op_kwargs={"dag_ids": ["floodEvent", "MATSim"]}
     )
 
+    dag_run_state = PythonOperator(
+        task_id='dag_run_state',
+        python_callable=af_utils.dag_run_status,
+        provide_context=True,
+        trigger_rule=TriggerRule.ALL_DONE,
+    )
+
     run_floodEvent >> run_matsim
     run_floodEvent >> stop_dag
-    run_matsim >> stop_dag
+    run_matsim >> stop_dag >> dag_run_state
