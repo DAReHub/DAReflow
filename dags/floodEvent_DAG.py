@@ -34,7 +34,6 @@ with DAG(
 ) as dag:
 
     start_date = "{{ data_interval_start.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(data_interval_start.microsecond // 1000) }}"
-    user = af_utils.get_user('floodEvent')
     scenario = "{{ dag_run.conf['scenario_name'] }}"
 
     # PATHS
@@ -43,7 +42,7 @@ with DAG(
     airflow_output_run = os.getenv("AIRFLOW_FLOODEVENT_OUTPUT") + start_date
     airflow_output_flood_network = airflow_output_run + "/flood_network/"
     airflow_output_networkChangeEvemts = airflow_output_run + "/networkChangeEvents/"
-    output_path = f"floodEvent/{user}/{scenario}/{start_date}"
+    output_path = f"floodEvent/{scenario}/{start_date}"
     output_bucket = os.getenv("DEFUALT_OUTPUT_BUCKET")
 
     # TASKS

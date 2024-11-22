@@ -123,8 +123,7 @@ def get_inputs(params, dst, data_interval_start=None, **context):
         param_key = param_key.replace(dag_id + "_", "")
 
         # Get the path to a coupled model output
-        if "<user>/<scenario>/<start_date>" in param_path:
-            param_path = param_path.replace("<user>", af_utils.get_user(dag_id))
+        if "/<scenario>/<start_date>/" in param_path:
             param_path = param_path.replace("<scenario>", scenario_name)
             param_path = param_path.replace("<start_date>", data_interval_start)
             print("new:", param_path)

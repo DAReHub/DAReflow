@@ -12,6 +12,10 @@ import time
 import scripts.utils.minio_utils as minio_utils
 
 
+# Buggy - this gets the last user who ran the DAG. This is fine if you have just
+# triggered the same DAG, but if it is a chained dag and someone else last ran
+# it, you will get the other persons username. There doesn't appear to be an
+# easy way around this in airflow - all 'user' functionality has been removed.
 def get_user(dag_id):
     print("Getting username")
     with create_session() as session:

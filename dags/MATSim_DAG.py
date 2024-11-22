@@ -37,12 +37,11 @@ with DAG(
 ) as dag:
 
     start_date = "{{ data_interval_start.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(data_interval_start.microsecond // 1000) }}"
-    user = af_utils.get_user('MATSim')
     scenario = "{{ dag_run.conf['scenario_name'] }}"
 
     airflow_input_run = os.getenv("AIRFLOW_MATSIM_INPUT") + start_date
     airflow_output_run = os.getenv("AIRFLOW_MATSIM_OUTPUT") + start_date
-    output_path = f"MATSim/{user}/{scenario}/{start_date}"
+    output_path = f"MATSim/{scenario}/{start_date}"
     output_bucket = os.getenv("DEFUALT_OUTPUT_BUCKET")
 
     # TASKS

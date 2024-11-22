@@ -20,7 +20,7 @@ class PostgresConnectionHook:
 
     def update_runs(self, dag_stage, params, output_path, image_key, module_name, module_commit, context):
         self.cursor.execute(
-            f"INSERT INTO airflow_runs (dag_id, dag_stage, run_start_time, run_id, run_trigger_type, task_states, context_params, scenario_name, docker_image, airflow_username, output_destination, module_name, module_commit) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            f"INSERT INTO airflow_runs (dag_id, dag_stage, run_start_time, run_id, run_trigger_type, task_states, context_params, scenario_name, docker_image, output_destination, module_name, module_commit) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
             (
                 context["dag"].dag_id,
                 dag_stage,
@@ -31,7 +31,6 @@ class PostgresConnectionHook:
                 json.dumps(params),
                 params["scenario_name"],
                 params[image_key] if image_key is not None else None,
-                af_utils.get_user(context["dag"].dag_id),
                 output_path,
                 module_name,
                 module_commit
