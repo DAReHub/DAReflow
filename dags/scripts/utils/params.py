@@ -35,31 +35,12 @@ class Parameters:
         return parameters
 
     def default_params(self, exclude=None, changes=None):
-        # "input_bucket": Param(
-        #     "models",
-        #     type="string",
-        #     title="MinIO input bucket",
-        #     enum=["models"]
-        # ),
-        # "output_bucket": Param(
-        #     "models",
-        #     type="string",
-        #     title="MinIO output bucket",
-        #     enum=["models"]
-        # ),
         data = {
             "scenario_name": Param(
-                type=["null", "string"],
+                type="string",
                 title="Scenario name",
-                # description="Create or reference the name of this scenario."
-                description="(optional) Name this scenario."
-            ),
-            # "scenario_prefix": Param(
-            #     False,
-            #     type="boolean",
-            #     title="Scenario prefix?",
-            #     description="If this is selected, airflow will look for files prefixed with your scenario name. When naming files, '_' are only allowed at the end of the prefix as a separator, e.g. 'flood-event-1_config.xml'. If files are in default folders, leave all following paths as their default values."
-            # ),
+                description="Name this scenario. Use the same scenario name as a previous run to save outputs within the same parent directory."
+            )
         }
         return self._modify_items(data, exclude, changes)
 
