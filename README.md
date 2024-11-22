@@ -1,5 +1,5 @@
 # DAReflow
-Apache airflow implementation for processing and chaining models
+DAReflow is an orchestration tool for enabling the seamless coupling and integration of DARe modelling workflows, datasets, interdependencies, and transformation layers. It is built using Apache Airflow.
 
 ## Docker
 Initial build:
