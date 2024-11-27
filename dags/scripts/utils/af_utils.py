@@ -96,7 +96,7 @@ def dag_run_status(excluded_tasks=None, **context):
         for task in excluded_tasks:
             states.pop(task)
     print("states", states)
-    failed = {key: value for key, value in states.items() if value != "success"}
+    failed = {key: value for key, value in states.items() if value == "failed"}
     if failed:
         raise AirflowException
 
