@@ -1,3 +1,12 @@
+# !!! If airflow experiences issues with delete permissions, on the host system
+# run:
+#   sudo setfacl -R -m u:id_no:rwx /path/to/staging/dir
+#   sudo setfacl -d -m u:id_no:rwx /path/to/staging/dir
+# where id_no is airflow host user id found by:
+#   docker exec -it <container_name> id
+# These should ensure airflow has permission to delete current and future items
+# only within the staging directory.
+
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.python_operator import PythonOperator

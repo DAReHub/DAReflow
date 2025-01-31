@@ -118,6 +118,8 @@ def get_inputs(params, dst, data_interval_start=None, **context):
         elif param_path is None:
             print(f"{param_key} not specified: skipping")
             continue
+        elif "datavalue" in param_key:
+            continue
 
         # Remove key prefix relating to dag
         param_key = param_key.replace(dag_id + "_", "")

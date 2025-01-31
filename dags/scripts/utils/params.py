@@ -135,13 +135,193 @@ class Parameters:
         }
         return self._modify_items(data, exclude, changes)
 
+    def udmSetup(self, exclude=None, changes=None):
+        data = {
+            "udm-setup_selection_image": Param(
+                "udm-setup:0fef60f27f1ecd4ad0dfefba5aeb374d26a9abf0",
+                type="string",
+                title="[udm-setup] Docker Image",
+                description="Select an udm-setup Docker image, as <name:tag>. See available images or upload your own (in .tar format) at docker-images bucket.",
+            ),
+            # TODO: Is this the same as "OpenUDM_datapath_developedland_coverage" when coupling?
+            "udm-setup_datapath_developed_coverage": Param(
+                type="string",
+                title="[udm-setup] developed_coverage path",
+            ),
+            "udm-setup_datapath_metadata": Param(
+                type="string",
+                title="[udm-setup] metadata path",
+            ),
+            "udm-setup_datapath_population": Param(
+                type="string",
+                title="[udm-setup] population path",
+            ),
+            "udm-setup_datapath_roads_proximity": Param(
+                type="string",
+                title="[udm-setup] roads_proximity path",
+            ),
+            "udm-setup_datapath_zone_identity": Param(
+                type="string",
+                title="[udm-setup] zone_identity path",
+            ),
+            "udm-setup_datavalue_attractors": Param(
+                type="string",
+                title="[udm-setup] attractors parameters",
+                description="A semi-colan seperated list of attractor layers (or string similar in some part) including a polarity value and a weight value. e.g: 'road:0.3:1;'",
+            ),
+            "udm-setup_datavalue_constraints": Param(
+                type="string",
+                title="[udm-setup] constraints parameters",
+                description="A semi-colan seperated list of constraint layers (or string similar in some part) including a threshold value for the layer at which point the cell is classed occupied/full and not suitable for development. All layers cell values should relate to a 'coverage' value, sucha s genereted by the udm-rasterise-coverage tool/model. e.g.: 'developed:0.3;'",
+            ),
+            "udm-setup_datavalue_current_development": Param(
+                type="string",
+                title="[udm-setup] current_development parameters",
+                description="A colan seperated list of a file name (or string similar in some part) and a threshold value for % coverage denoting the pint it's considered already occupied/developed. e.g.: 'developed:0.3;'",
+            ),
+            "udm-setup_datavalue_density_from_raster": Param(
+                type="integer",
+                title="[udm-setup] density_from_raster parameters",
+                description="Parameter (integer) to identify is new development density is taken from the input data (0) or from an input density raster.",
+            ),
+            "udm-setup_datavalue_people_per_dwelling": Param(
+                type="number",
+                title="[udm-setup] people_per_dwelling parameters",
+                description="Float value for converting between people per cell and people per dwelling.",
+            ),
+            "udm-setup_datavalue_coverage_threshold": Param(
+                type="number",
+                title="[udm-setup] coverage_threshold parameters",
+                description="Float value for the threshold value at which a cell is considered occupied/full and can't be developed when all constraints have been merged.",
+            ),
+            "udm-setup_datavalue_minimum_development_area": Param(
+                type="integer",
+                title="[udm-setup] minimum_development_area parameters",
+                description="Integer value for the minimum number of cells which must be clustered together to consider for development.",
+            ),
+            "udm-setup_datavalue_maximum_plot_size": Param(
+                type="integer",
+                title="[udm-setup] maximum_plot_size parameters",
+                description="Integer value for the maximum number of cells developed around most suitable cell in zone in each iteration of development spreading algorithm.",
+            ),
+            "udm-setup_datavalue_extra_parameters": Param(
+                type=["null", "string"],
+                title="[udm-setup] extra_parameters parameters",
+                description="Allow alternative parameters to be noted, such as those based on the inclusion of weightings of layers.",
+            ),
+        }
+        return self._modify_items(data, exclude, changes)
+
+    def OpenUDM(self, exclude=None, changes=None):
+        data = {
+            "OpenUDM_selection_image": Param(
+                "udm-dafni:4b3634324e3985bbfa645c7129cc6f0159fe6e82",
+                type="string",
+                title="[OpenUDM] Docker Image",
+                description="Select an OpenUDM Docker image, as <name:tag>. See available images or upload your own (in .tar format) at docker-images bucket.",
+            ),
+            "OpenUDM_datapath_attractors": Param(
+                type="string",
+                title="[OpenUDM] attractors path",
+                description="Path to the attractors.csv file for OpenUDM model (include bucket name)"
+            ),
+            "OpenUDM_datapath_constraints": Param(
+                type="string",
+                title="[OpenUDM] constraints path",
+                description="Path to the constraints.csv file for OpenUDM model (include bucket name)"
+            ),
+            "OpenUDM_datapath_developedland_coverage_100m": Param(
+                type="string",
+                title="[OpenUDM] developedland_coverage_100m path",
+                description="Path to the developedland_coverage.asc file for OpenUDM model (include bucket name)"
+            ),
+            "OpenUDM_datapath_development_proximity_100m": Param(
+                type="string",
+                title="[OpenUDM] development_proximity_100m path",
+                description="Path to the development_proximity.asc file for OpenUDM model (include bucket name)"
+            ),
+            "OpenUDM_datapath_parameters": Param(
+                type="string",
+                title="[OpenUDM] parameters path",
+                description="Path to the parameters.csv file for OpenUDM model (include bucket name)"
+            ),
+            "OpenUDM_datapath_population": Param(
+                type="string",
+                title="[OpenUDM] population path",
+                description="Path to the population.csv file for OpenUDM model (include bucket name)"
+            ),
+            "OpenUDM_datapath_zone_identity": Param(
+                type="string",
+                title="[OpenUDM] zone_identity path",
+                description="Path to the zone_identity.csv file for OpenUDM model (include bucket name)"
+            ),
+            "OpenUDM_datapath_metadata": Param(
+                type="string",
+                title="[OpenUDM] metadata path",
+                description="Path to the metadata.csv produced by udm-setup (include bucket name)"
+            ),
+            "OpenUDM_datavalue_run_ufg": Param(
+                type="boolean",
+                title="[OpenUDM] Enable Urban Fabric Generator?"
+            ),
+        }
+        return self._modify_items(data, exclude, changes)
+
     def floodEvent_matsim(self):
         new_params = {
             "MATSim_datapath_inputChangeEventsFile": Param(
                 default=os.getenv('MATSIM_DATAPATH_NETWORKCHANGEEVENTS_FLOODEVENT'),
                 type="string",
                 title="[MATSim-CHAIN] LEAVE AS DEFAULT",
-                description="Network change events to be inherited by floodEvent module."
+                description="Network change events to be inherited from floodEvent module."
             )
         }
         return self.floodEvent() | self.matsim(exclude=["datapath_networkChangeEvents"]) | new_params
+
+    def udmSetup_OpenUDM(self):
+        new_params = {
+            "OpenUDM_datapath_attractors": Param(
+                default=os.getenv('OPENUDM_DATAPATH_ATTRACTORS_UDMSETUP'),
+                type="string",
+                title="[OpenUDM-CHAIN] LEAVE AS DEFAULT",
+                description="attractors to be inherited from udm-setup module."
+            ),
+            "OpenUDM_datapath_constraints": Param(
+                default=os.getenv('OPENUDM_DATAPATH_CONSTRAINTS_UDMSETUP'),
+                type="string",
+                title="[OpenUDM-CHAIN] LEAVE AS DEFAULT",
+                description="constraints to be inherited from udm-setup module."
+            ),
+            "OpenUDM_datapath_parameters": Param(
+                default=os.getenv('OPENUDM_DATAPATH_PARAMETERS_UDMSETUP'),
+                type="string",
+                title="[OpenUDM-CHAIN] LEAVE AS DEFAULT",
+                description="parameters to be inherited from udm-setup module."
+            ),
+            "OpenUDM_datapath_population": Param(
+                default=os.getenv('OPENUDM_DATAPATH_POPULATION_UDMSETUP'),
+                type="string",
+                title="[OpenUDM-CHAIN] LEAVE AS DEFAULT",
+                description="population to be inherited from udm-setup module."
+            ),
+            "OpenUDM_datapath_zone_identity": Param(
+                default=os.getenv('OPENUDM_DATAPATH_ZONEIDENTITY_UDMSETUP'),
+                type="string",
+                title="[OpenUDM-CHAIN] LEAVE AS DEFAULT",
+                description="zone_identity to be inherited from udm-setup module."
+            ),
+            "OpenUDM_datapath_metadata": Param(
+                default=os.getenv('OPENUDM_DATAPATH_METADATA_UDMSETUP'),
+                type="string",
+                title="[OpenUDM-CHAIN] LEAVE AS DEFAULT",
+                description="metadata to be inherited from udm-setup module."
+            )
+        }
+        return self.udmSetup() | self.OpenUDM(exclude=[
+            "OpenUDM_datapath_attractors",
+            "OpenUDM_datapath_constraints",
+            "OpenUDM_datapath_parameters",
+            "OpenUDM_datapath_population",
+            "OpenUDM_datapath_zone_identity",
+            "OpenUDM_datapath_metadata"
+        ]) | new_params

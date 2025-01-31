@@ -12,7 +12,6 @@ import scripts.utils.minio_utils as minio_utils
 import scripts.utils.params as params
 import scripts.utils.af_utils as af_utils
 import scripts.utils.docker_utils as docker_utils
-import scripts.utils.matsim_utils as matsim_utils
 
 
 class CustomDockerOperator(DockerOperator):
@@ -26,22 +25,21 @@ default_args = {
 }
 
 with DAG(
-    dag_id='MATSim',
-    description='Run MATSim',
+    dag_id='OpenUDM',
+    description='Run OpenUDM',
     default_args=default_args,
-    max_active_runs=int(Variable.get("MATSIM_MAX_ACTIVE_RUNS")),
+    max_active_runs=int(Variable.get("UDM_MAX_ACTIVE_RUNS")),
     schedule=None,
-    params=parameters.default_params() | parameters.matsim(),
+    params=parameters.default_params() | parameters.OpenUDM(),
     render_template_as_native_obj=True,
-    tags=["MATSim", "processor"]
+    tags=["UDM", "processor"]
 ) as dag:
 
     start_date = "{{ data_interval_start.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(data_interval_start.microsecond // 1000) }}"
     scenario = "{{ dag_run.conf['scenario_name'] }}"
 
-    airflow_input_run = os.getenv("AIRFLOW_MATSIM_INPUT") + start_date
-    airflow_output_run = os.getenv("AIRFLOW_MATSIM_OUTPUT") + start_date
-    output_path = f"MATSim/{scenario}/{start_date}"
+    airflow_input_output_run = os.getenv("AIRFLOW_UDM_INPUT_OUTPUT") + start_date
+    output_path = f"OpenUDM/{scenario}/{start_date}"
     output_bucket = os.getenv("DEFUALT_OUTPUT_BUCKET")
 
     # TASKS
@@ -58,7 +56,7 @@ with DAG(
 
     setup_environment = BashOperator(
         task_id='setup_environment',
-        bash_command=f'mkdir {airflow_input_run} {airflow_output_run}'
+        bash_command=f'mkdir {airflow_input_output_run}'
     )
 
     stage_data = PythonOperator(
@@ -68,17 +66,8 @@ with DAG(
         dag=dag,
         op_kwargs={
             "params": "{{ dag_run.conf }}",
-            "dst": airflow_input_run,
+            "dst": airflow_input_output_run,
             "data_interval_start": start_date
-        }
-    )
-
-    configure_config = PythonOperator(
-        task_id='configure_config',
-        python_callable=matsim_utils.configure_config,
-        op_kwargs={
-            "params": "{{ dag_run.conf }}",
-            "input_dir": airflow_input_run
         }
     )
 
@@ -87,28 +76,15 @@ with DAG(
         python_callable=docker_utils.prep_image,
         provide_context=True,
         op_kwargs={
-            "params": "{{ dag_run.conf }}",
+            "params": "{{ dag_run.conf }}"
         }
     )
 
-    periodic_post = PythonOperator(
-        task_id='periodic_post',
-        python_callable=af_utils.periodic_copier,
-        provide_context=True,
-        dag=dag,
-        op_kwargs={
-            "bucket": output_bucket,
-            "src": airflow_output_run,
-            "dst": output_path,
-            "monitored_task": "run_matsim"
-        }
-    )
-
-    run_matsim = CustomDockerOperator(
+    run_udm = CustomDockerOperator(
         api_version='auto',
-        task_id='run_matsim',
-        image="{{ dag_run.conf['MATSim_selection_image'] }}",
-        container_name='airflow-matsim_' + start_date,
+        task_id='run_udm',
+        image="{{ dag_run.conf['OpenUDM_selection_image'] }}",
+        container_name='airflow-udm_' + start_date,
         # cpus=0.1,
         auto_remove=True,
         docker_url='tcp://docker-proxy:2375',
@@ -118,20 +94,14 @@ with DAG(
         # airflow container or on host.
         mounts=[
             Mount(
-                source=os.getenv("HOST_MATSIM_INPUT") + start_date,
-                target=os.getenv("MATSIM_CONTAINER_INPUT"),
-                type='bind',
-                read_only=True
-            ),
-            Mount(
-                source=os.getenv("HOST_MATSIM_OUTPUT") + start_date,
-                target=os.getenv("MATSIM_CONTAINER_OUTPUT"),
+                source=os.getenv("HOST_UDM_INPUT_OUTPUT") + start_date,
+                target=os.getenv("UDM_CONTAINER_INPUT_OUTPUT"),
                 type='bind'
-            ),
+            )
         ],
         mount_tmp_dir=False,
         environment={
-            'MATSIM_OUTPUT_OVERWRITE': 'true'
+            'RUN_UFG': "{{ dag_run.conf['OpenUDM_datavalue_run_ufg'] }}"
         },
     )
 
@@ -143,7 +113,7 @@ with DAG(
         dag=dag,
         op_kwargs={
             "bucket": output_bucket,
-            "src": airflow_output_run,
+            "src": airflow_input_output_run,
             "dst": output_path,
         }
     )
@@ -164,11 +134,7 @@ with DAG(
         python_callable=af_utils.dag_run_status,
         provide_context=True,
         trigger_rule=TriggerRule.ALL_DONE,
-        op_kwargs={
-            "excluded_tasks": ["periodic_post"]
-        }
     )
 
     # SEQUENCE
-    record_run_start >> setup_environment >> stage_data >> configure_config >> prepare_image >> run_matsim >> post_final_data >> record_run_end >> dag_run_state
-    prepare_image >> periodic_post >> post_final_data
+    record_run_start >> setup_environment >> stage_data >> prepare_image >> run_udm >> post_final_data >> record_run_end >> dag_run_state

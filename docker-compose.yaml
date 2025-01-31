@@ -312,6 +312,7 @@ services:
       - ${AIRFLOW_PROJ_DIR:-.}/certs/private.key:/etc/ssl/private/private.key:ro
     depends_on:
       - airflow-webserver
+    restart: always
 
 volumes:
   postgres-db-volume:
