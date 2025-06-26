@@ -267,6 +267,39 @@ class Parameters:
         }
         return self._modify_items(data, exclude, changes)
 
+    def citycat(self, exclude=None, changes=None):
+        data = {
+            "CityCAT_selection_image": Param(
+                "citycat:6.4.16.8604",
+                type="string",
+                title="[CityCAT] Docker Image",
+                description="Select a CityCAT Docker image, as <name:tag>. See available images or upload your own (in .tar format) at docker-images bucket.",
+            ),
+            "CityCAT_datapath_CityCat_Config_1": Param(
+                type="string",
+                title="[CityCAT] CityCat_Config path",
+                description="Your CityCat_Config and Rainfall_Data filenames will be renamed to CityCat_Config_1 and Rainfall_Data_1, with output name R1C1_SurfaceMaps"
+            ),
+            "CityCAT_datapath_Rainfall_Data_1": Param(
+                type="string",
+                title="[CityCAT] Rainfall_Data path",
+                description="Your CityCat_Config and Rainfall_Data filenames will be renamed to CityCat_Config_1 and Rainfall_Data_1, with output name R1C1_SurfaceMaps"
+            ),
+            "CityCAT_datapath_Buildings": Param(
+                type="string",
+                title="[CityCAT] Buildings path",
+            ),
+            "CityCAT_datapath_Domain_DEM": Param(
+                type="string",
+                title="[CityCAT] Domain_DEM path",
+            ),
+            "CityCAT_datapath_GreenAreas": Param(
+                type="string",
+                title="[CityCAT] GreenAreas path",
+            ),
+        }
+        return self._modify_items(data, exclude, changes)
+
     def floodEvent_matsim(self):
         new_params = {
             "MATSim_datapath_inputChangeEventsFile": Param(

@@ -21,7 +21,7 @@ with DAG(
     catchup=False,
     params=parameters.default_params() | parameters.udmSetup_OpenUDM(),
     render_template_as_native_obj=True,
-    tags=["chain", "udm-setup", "OpenUDM"],
+    tags=["chain", "udm-setup", "UDM"],
 ) as dag:
 
     run_udmSetup = TriggerDagRunOperator(

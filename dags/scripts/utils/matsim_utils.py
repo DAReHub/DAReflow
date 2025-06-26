@@ -3,6 +3,10 @@ from pathlib import Path
 from airflow.models import Variable
 
 def configure_config(params, input_dir):
+    """
+    Renames filenames provided within matsim config with the respective
+    filenames provided by the user
+    """
     filepath = input_dir + '/config.xml'
 
     # Must match matsim params
