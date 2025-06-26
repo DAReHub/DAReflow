@@ -38,8 +38,7 @@ with DAG(
     start_date = "{{ data_interval_start.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(data_interval_start.microsecond // 1000) }}"
     scenario = "{{ dag_run.conf['scenario_name'] }}"
 
-    airflow_input_run = os.getenv("AIRFLOW_BASE") + "citycat/input/" + start_date
-    airflow_output_run = os.getenv("AIRFLOW_BASE") + "citycat/output/" + start_date
+    airflow_input_output_run = os.getenv("AIRFLOW_BASE") + "citycat/input_output/" + start_date
     output_path = f"CityCAT/{scenario}/{start_date}"
     output_bucket = os.getenv("DEFUALT_OUTPUT_BUCKET")
 
@@ -57,7 +56,7 @@ with DAG(
 
     setup_environment = BashOperator(
         task_id='setup_environment',
-        bash_command=f'mkdir {airflow_input_run} {airflow_output_run}'
+        bash_command=f'mkdir {airflow_input_output_run}'
     )
 
     stage_data = PythonOperator(
@@ -67,7 +66,7 @@ with DAG(
         dag=dag,
         op_kwargs={
             "params": "{{ dag_run.conf }}",
-            "dst": airflow_input_run,
+            "dst": airflow_input_output_run,
             "data_interval_start": start_date
         }
     )
@@ -88,7 +87,7 @@ with DAG(
         dag=dag,
         op_kwargs={
             "bucket": output_bucket,
-            "src": airflow_output_run,
+            "src": airflow_input_output_run,
             "dst": output_path,
             "monitored_task": "run_citycat"
         }
@@ -108,21 +107,13 @@ with DAG(
         # airflow container or on host.
         mounts=[
             Mount(
-                source=os.getenv("HOST_BASE") + "citycat/input/" + start_date,
+                source=os.getenv("HOST_BASE") + "citycat/input_output/" + start_date,
                 target="/app",
                 type='bind',
                 read_only=True
             ),
-            Mount(
-                source=os.getenv("HOST_BASE") + "citycat/output/" + start_date,
-                target="/app/R1C1_SurfaceMaps",
-                type='bind'
-            ),
         ],
         mount_tmp_dir=False,
-        environment={
-            'CITYCAT_OUTPUT_OVERWRITE': 'true'
-        },
         command="-c 1 -r 1"
     )
 
@@ -134,7 +125,7 @@ with DAG(
         dag=dag,
         op_kwargs={
             "bucket": output_bucket,
-            "src": airflow_output_run,
+            "src": airflow_input_output_run,
             "dst": output_path,
         }
     )
