@@ -117,11 +117,6 @@ class Parameters:
 
     def floodEvent(self, exclude=None, changes=None):
         data = {
-            "floodEvent_datapath_config": Param(
-                type="string",
-                title="[floodEvent] config path",
-                description=F"Path to the config.json file for flood-event module (include bucket name). E.g. {os.getenv('FLOODEVENT_DATAPATH_CONFIG_DEFAULT')}",
-            ),
             "floodEvent_datadir_flood-rasters": Param(
                 type="string",
                 title="[floodEvent] rasters directory",
@@ -131,7 +126,57 @@ class Parameters:
                 type="string",
                 title="[floodEvent] network path",
                 description=f"Path to the network.gpkg file. Include bucket name. E.g. {os.getenv('FLOODEVENT_DATAPATH_NETWORK_DEFAULT')}"
-            )
+            ),
+            "floodEvent_datavalue_crs": Param(
+                "27700",
+                type="string",
+                title="[floodEvent] CRS"
+            ),
+            "floodEvent_datavalue_network_id_name": Param(
+                "ID",
+                type="string",
+                title="[floodEvent] network_id_name"
+            ),
+            "floodEvent_datavalue_network_freespeed_name": Param(
+                "FRSPEED",
+                type="string",
+                title="[floodEvent] network_freespeed_name"
+            ),
+            "floodEvent_datavalue_network_modes_name": Param(
+                type=["null", "string"],
+                title="[floodEvent] network_modes_name"
+            ),
+            "floodEvent_datavalue_network_lanes_name": Param(
+                "LANES",
+                type="string",
+                title="[floodEvent] network_lanes_name"
+            ),
+            "floodEvent_datavalue_network_buffer_factor": Param(
+                1.825,
+                type="number",
+                title="[floodEvent] network_buffer_factor"
+            ),
+            "floodEvent_datavalue_excluded_modes": Param(
+                type=["null", "array"],
+                title="[floodEvent] excluded_modes",
+                description='Mode links to exclude. To create a list input each item on its own line with no extra symbols or leading/trailing whitespaces'
+            ),
+            "floodEvent_datavalue_depth_statistic": Param(
+                "max",
+                type="string",
+                title="[floodEvent] depth_statistic",
+                description="For options see: https://isciences.github.io/exactextract/operations.html"
+            ),
+            "floodEvent_datavalue_event_start_time": Param(
+                type="string",
+                title="[floodEvent] event_start_time",
+                description="Event start time as format %H:%M:%S (e.g. 12:00:00 for 12pm)"
+            ),
+            "floodEvent_datavalue_time_interval": Param(
+                type="string",
+                title="[floodEvent] time_interval",
+                description="Interval time as format %H:%M:%S (e.g. 00:10:00 for a 10 min interval)"
+            ),
         }
         return self._modify_items(data, exclude, changes)
 
