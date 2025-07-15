@@ -91,10 +91,7 @@ with DAG(
             "floodmap_dir": airflow_input_rasters,
             "output_dir": airflow_output_flood_network,
             "crs": "{{ params.floodEvent_datavalue_crs }}",
-            "network_id_name": "{{ params.floodEvent_datavalue_network_id_name }}",
-            "network_freespeed_name": "{{ params.floodEvent_datavalue_network_freespeed_name }}",
-            "network_modes_name": "{{ params.floodEvent_datavalue_network_modes_name }}",
-            "network_lanes_name": "{{ params.floodEvent_datavalue_network_lanes_name }}",
+            "network_from": "{{ params.floodEvent_datavalue_network_from }}",
             "network_buffer_factor": "{{ params.floodEvent_datavalue_network_buffer_factor }}",
             "excluded_modes": "{{ params.floodEvent_datavalue_excluded_modes }}",
             "depth_statistic": "{{ params.floodEvent_datavalue_depth_statistic }}"
@@ -122,8 +119,6 @@ with DAG(
             "output_dir": airflow_output_networkChangeEvemts,
             "event_start_time": "{{ params.floodEvent_datavalue_event_start_time }}",
             "time_interval": "{{ params.floodEvent_datavalue_time_interval }}",
-            "flood_network_id_name": "{{ params.floodEvent_datavalue_network_id_name }}",
-            "velocity_keyword": "velocity"
         }
     )
 

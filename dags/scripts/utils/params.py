@@ -132,24 +132,10 @@ class Parameters:
                 type="string",
                 title="[floodEvent] CRS"
             ),
-            "floodEvent_datavalue_network_id_name": Param(
-                "ID",
+            "floodEvent_datavalue_network_from": Param(
+                "PT2",
                 type="string",
-                title="[floodEvent] network_id_name"
-            ),
-            "floodEvent_datavalue_network_freespeed_name": Param(
-                "FRSPEED",
-                type="string",
-                title="[floodEvent] network_freespeed_name"
-            ),
-            "floodEvent_datavalue_network_modes_name": Param(
-                type=["null", "string"],
-                title="[floodEvent] network_modes_name"
-            ),
-            "floodEvent_datavalue_network_lanes_name": Param(
-                "LANES",
-                type="string",
-                title="[floodEvent] network_lanes_name"
+                title="[floodEvent] network_from"
             ),
             "floodEvent_datavalue_network_buffer_factor": Param(
                 1.825,
