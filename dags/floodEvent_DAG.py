@@ -14,9 +14,8 @@ import scripts.utils.params as params
 sys.path.append("/opt/airflow/modules/" + Variable.get("FLOODEVENT_MODULE"))
 import flood_network
 import generate_changeEvents
-import input_validation
+# import input_validation
 
-parameters = params.Parameters()
 
 default_args = {
     'owner': 'airflow',
@@ -28,7 +27,7 @@ with DAG(
     default_args=default_args,
     max_active_runs=int(Variable.get("FLOODEVENT_MAX_ACTIVE_RUNS")),
     schedule=None,
-    params=parameters.default_params() | parameters.floodEvent(),
+    params=vars(params.FloodEvent()),
     render_template_as_native_obj=True,
     tags=["flood-event", "processor"]
 ) as dag:
@@ -38,7 +37,7 @@ with DAG(
 
     # PATHS
     airflow_input_run = os.getenv("AIRFLOW_FLOODEVENT_INPUT") + start_date
-    airflow_input_rasters = airflow_input_run + "/flood-rasters/"
+    airflow_input_rasters = airflow_input_run + "/flood_rasters/"
     airflow_output_run = os.getenv("AIRFLOW_FLOODEVENT_OUTPUT") + start_date
     airflow_output_flood_network = airflow_output_run + "/flood_network/"
     airflow_output_networkChangeEvemts = airflow_output_run + "/networkChangeEvents/"
@@ -74,13 +73,13 @@ with DAG(
         },
     )
 
-    validate_inputs = PythonOperator(
-        task_id='validate_inputs',
-        python_callable=input_validation.main,
-        provide_context=True,
-        dag=dag,
-        op_kwargs={"filepath": airflow_input_run}
-    )
+    # validate_inputs = PythonOperator(
+    #     task_id='validate_inputs',
+    #     python_callable=input_validation.main,
+    #     provide_context=True,
+    #     dag=dag,
+    #     op_kwargs={"filepath": airflow_input_run}
+    # )
 
     flood_network = PythonOperator(
         task_id='flood_network',
@@ -154,5 +153,5 @@ with DAG(
     )
 
     # SEQUENCE
-    record_run_start >> setup_environment >> stage_data >> validate_inputs >> flood_network >> generate_networkChangeEvents >> post_changeEvents_data >> record_run_end >> dag_run_state
+    record_run_start >> setup_environment >> stage_data >> flood_network >> generate_networkChangeEvents >> post_changeEvents_data >> record_run_end >> dag_run_state
     flood_network >> post_flood_network_data >> record_run_end

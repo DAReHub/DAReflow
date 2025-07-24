@@ -17,20 +17,13 @@ import scripts.utils.docker_utils as docker_utils
 class CustomDockerOperator(DockerOperator):
     template_fields = DockerOperator.template_fields + ('mounts',)
 
-
-parameters = params.Parameters()
-
-default_args = {
-    'owner': 'airflow',
-}
-
 with DAG(
-    dag_id='udm-setup',
+    dag_id='udmsetup',
     description='Setup data for UDM model.',
-    default_args=default_args,
+    default_args={'owner': 'airflow'},
     max_active_runs=int(Variable.get("UDMSETUP_MAX_ACTIVE_RUNS")),
     schedule=None,
-    params=parameters.default_params() | parameters.udmSetup(),
+    params=vars(params.UdmSetup()),
     render_template_as_native_obj=True,
     tags=["UDM", "processor"]
 ) as dag:
@@ -40,7 +33,7 @@ with DAG(
 
     airflow_input_run = os.getenv("AIRFLOW_UDMSETUP_INPUT") + start_date
     airflow_output_run = os.getenv("AIRFLOW_UDMSETUP_OUTPUT") + start_date
-    output_path = f"udm-setup/{scenario}/{start_date}"
+    output_path = f"udmsetup/{scenario}/{start_date}"
     output_bucket = os.getenv("DEFUALT_OUTPUT_BUCKET")
 
     # TASKS
@@ -84,7 +77,7 @@ with DAG(
     run_udmSetup = CustomDockerOperator(
         api_version='auto',
         task_id='run_udmSetup',
-        image="{{ dag_run.conf['udm-setup_selection_image'] }}",
+        image="{{ dag_run.conf['udmsetup_selection_image'] }}",
         container_name='airflow-udmsetup_' + start_date,
         # cpus=0.1,
         auto_remove=True,
@@ -109,17 +102,17 @@ with DAG(
         mount_tmp_dir=False,
         environment={
             'UDMSETUP_OUTPUT_OVERWRITE': 'true',
-            'attractors': "{{ dag_run.conf['udm-setup_datavalue_attractors'] }}",
-            'constraints': "{{ dag_run.conf['udm-setup_datavalue_constraints'] }}",
-            'current_development': "{{ dag_run.conf['udm-setup_datavalue_current_development'] }}",
-            'density_from_raster': "{{ dag_run.conf['udm-setup_datavalue_density_from_raster'] }}",
-            'people_per_dwelling': "{{ dag_run.conf['udm-setup_datavalue_people_per_dwelling'] }}",
-            'coverage_threshold': "{{ dag_run.conf['udm-setup_datavalue_coverage_threshold'] }}",
-            'minimum_development_area': "{{ dag_run.conf['udm-setup_datavalue_minimum_development_area'] }}",
-            'maximum_plot_size': "{{ dag_run.conf['udm-setup_datavalue_maximum_plot_size'] }}",
+            'attractors': "{{ dag_run.conf['udmsetup_datavalue_attractors'] }}",
+            'constraints': "{{ dag_run.conf['udmsetup_datavalue_constraints'] }}",
+            'current_development': "{{ dag_run.conf['udmsetup_datavalue_current_development'] }}",
+            'density_from_raster': "{{ dag_run.conf['udmsetup_datavalue_density_from_raster'] }}",
+            'people_per_dwelling': "{{ dag_run.conf['udmsetup_datavalue_people_per_dwelling'] }}",
+            'coverage_threshold': "{{ dag_run.conf['udmsetup_datavalue_coverage_threshold'] }}",
+            'minimum_development_area': "{{ dag_run.conf['udmsetup_datavalue_minimum_development_area'] }}",
+            'maximum_plot_size': "{{ dag_run.conf['udmsetup_datavalue_maximum_plot_size'] }}",
             'OUTPUT_TITLE': 'airflow_run',
             'OUTPUT_DESCRIPTION': 'airflow_run'
-            #'extra_parameters': "{{ dag_run.conf['udm-setup_datavalue_extra_parameters'] }}"
+            #'extra_parameters': "{{ dag_run.conf['udmsetup_datavalue_extra_parameters'] }}"
         },
     )
 

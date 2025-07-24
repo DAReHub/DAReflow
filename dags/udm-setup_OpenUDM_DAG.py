@@ -6,27 +6,24 @@ from airflow.utils.trigger_rule import TriggerRule
 import scripts.utils.params as params
 import scripts.utils.af_utils as af_utils
 
-
-parameters = params.Parameters()
-
 default_args = {
     'owner': 'airflow',
 }
 
 with DAG(
-    dag_id='udm-setup_OpenUDM',
+    dag_id='udmsetup_OpenUDM',
     description='Run udm-setup and OpenUDM as a chain',
     default_args=default_args,
     schedule=None,
     catchup=False,
-    params=parameters.default_params() | parameters.udmSetup_OpenUDM(),
+    params=vars(params.UdmSetupOpenUdm()),
     render_template_as_native_obj=True,
-    tags=["chain", "udm-setup", "UDM"],
+    tags=["chain", "udmsetup", "UDM"],
 ) as dag:
 
     run_udmSetup = TriggerDagRunOperator(
         task_id='run_udmSetup',
-        trigger_dag_id='udm-setup',
+        trigger_dag_id='udmsetup',
         conf="{{ params }}",
         execution_date="{{ execution_date }}",
         wait_for_completion=True,

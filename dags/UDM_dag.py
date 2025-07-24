@@ -17,9 +17,6 @@ import scripts.utils.docker_utils as docker_utils
 class CustomDockerOperator(DockerOperator):
     template_fields = DockerOperator.template_fields + ('mounts',)
 
-
-parameters = params.Parameters()
-
 default_args = {
     'owner': 'airflow',
 }
@@ -30,7 +27,7 @@ with DAG(
     default_args=default_args,
     max_active_runs=int(Variable.get("UDM_MAX_ACTIVE_RUNS")),
     schedule=None,
-    params=parameters.default_params() | parameters.OpenUDM(),
+    params=vars(params.OpenUdm()),
     render_template_as_native_obj=True,
     tags=["UDM", "processor"]
 ) as dag:

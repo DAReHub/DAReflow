@@ -18,9 +18,6 @@ import scripts.utils.matsim_utils as matsim_utils
 class CustomDockerOperator(DockerOperator):
     template_fields = DockerOperator.template_fields + ('mounts',)
 
-
-parameters = params.Parameters()
-
 default_args = {
     'owner': 'airflow',
 }
@@ -31,7 +28,7 @@ with DAG(
     default_args=default_args,
     max_active_runs=int(Variable.get("MATSIM_MAX_ACTIVE_RUNS")),
     schedule=None,
-    params=parameters.default_params() | parameters.matsim(),
+    params=vars(params.MATSim()),
     render_template_as_native_obj=True,
     tags=["MATSim", "processor"]
 ) as dag:

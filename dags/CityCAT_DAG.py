@@ -18,8 +18,6 @@ class CustomDockerOperator(DockerOperator):
     template_fields = DockerOperator.template_fields + ('mounts',)
 
 
-parameters = params.Parameters()
-
 default_args = {
     'owner': 'airflow',
 }
@@ -30,7 +28,7 @@ with DAG(
     default_args=default_args,
     max_active_runs=int(Variable.get("CITYCAT_MAX_ACTIVE_RUNS")),
     schedule=None,
-    params=parameters.default_params() | parameters.citycat(),
+    params=vars(params.CityCat()),
     render_template_as_native_obj=True,
     tags=["CityCAT", "processor"]
 ) as dag:

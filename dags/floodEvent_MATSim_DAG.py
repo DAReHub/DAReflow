@@ -7,8 +7,6 @@ import scripts.utils.params as params
 import scripts.utils.af_utils as af_utils
 
 
-parameters = params.Parameters()
-
 default_args = {
     'owner': 'airflow',
 }
@@ -19,7 +17,7 @@ with DAG(
     default_args=default_args,
     schedule=None,
     catchup=False,
-    params=parameters.default_params() | parameters.floodEvent_matsim(),
+    params=vars(params.FloodEventMatsim()),
     render_template_as_native_obj=True,
     tags=["chain", "floodEvent", "MATSim"],
 ) as dag:
