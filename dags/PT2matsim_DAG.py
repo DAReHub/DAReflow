@@ -12,27 +12,31 @@ import scripts.utils.minio_utils as minio_utils
 import scripts.utils.params as params
 import scripts.utils.af_utils as af_utils
 import scripts.utils.docker_utils as docker_utils
+import scripts.utils.pt2matsim_utils as pt2matsim_utils
 
 
 class CustomDockerOperator(DockerOperator):
     template_fields = DockerOperator.template_fields + ('mounts',)
 
+
 with DAG(
-    dag_id='CityCAT',
-    description='Run CityCAT',
+    dag_id='PT2MATSim',
+    description='Run PT2 MATSim',
     default_args={'owner': 'airflow'},
-    max_active_runs=int(Variable.get("CITYCAT_MAX_ACTIVE_RUNS")),
+    max_active_runs=int(Variable.get("PT2MATSIM_MAX_ACTIVE_RUNS")),
     schedule=None,
-    params=vars(params.CityCat()),
+    params=vars(params.Pt2Matsim()),
     render_template_as_native_obj=True,
-    tags=["CityCAT", "processor"]
+    tags=["PT", "PT2 MATSim", "processor"]
 ) as dag:
 
     start_date = "{{ data_interval_start.strftime('%Y-%m-%d_%H-%M-%S') }}.{{ '{:03d}'.format(data_interval_start.microsecond // 1000) }}"
     scenario = "{{ dag_run.conf['scenario_name'] }}"
 
-    airflow_input_output_run = os.getenv("AIRFLOW_BASE") + "citycat/input_output/" + start_date
-    output_path = f"CityCAT/{scenario}/{start_date}"
+    airflow_input_run = os.getenv("AIRFLOW_BASE") + "pt2matsim/input/" + start_date
+    airflow_input_gtfs = airflow_input_run + "/GTFS/"
+    airflow_output_run = os.getenv("AIRFLOW_BASE") + "pt2matsim/output/" + start_date
+    output_path = f"PT2MATSim/{scenario}/{start_date}"
     output_bucket = os.getenv("DEFUALT_OUTPUT_BUCKET")
 
     # TASKS
@@ -49,7 +53,7 @@ with DAG(
 
     setup_environment = BashOperator(
         task_id='setup_environment',
-        bash_command=f'mkdir {airflow_input_output_run}'
+        bash_command=f'mkdir {airflow_input_run} {airflow_input_gtfs} {airflow_output_run}'
     )
 
     stage_data = PythonOperator(
@@ -59,8 +63,18 @@ with DAG(
         dag=dag,
         op_kwargs={
             "params": "{{ dag_run.conf }}",
-            "dst": airflow_input_output_run,
+            "dst": airflow_input_run,
             "data_interval_start": start_date
+        }
+    )
+
+    configure_config = PythonOperator(
+        task_id='configure_config',
+        python_callable=pt2matsim_utils.configure_main,
+        op_kwargs={
+            "params": "{{ dag_run.conf }}",
+            "input_osm_config": airflow_input_run + '/OsmConfig.xml',
+            "input_ptmapper_config": airflow_input_run + '/PTMapperConfig.xml'
         }
     )
 
@@ -80,18 +94,18 @@ with DAG(
         dag=dag,
         op_kwargs={
             "bucket": output_bucket,
-            "src": airflow_input_output_run,
+            "src": airflow_output_run,
             "dst": output_path,
-            "monitored_task": "run_citycat"
+            "monitored_task": "run_pt2matsim"
         }
     )
 
-    run_citycat = CustomDockerOperator(
+    run_pt2matsim = CustomDockerOperator(
         api_version='auto',
-        task_id='run_citycat',
-        image="{{ dag_run.conf['CityCAT_selection_image'] }}",
-        container_name='airflow-citycat_' + start_date,
-        cpus=0.8,
+        task_id='run_pt2matsim',
+        image="{{ dag_run.conf['PT2MATSim_selection_image'] }}",
+        container_name='airflow-pt2matsim_' + start_date,
+        # cpus=0.1,
         auto_remove=True,
         docker_url='tcp://docker-proxy:2375',
         network_mode='bridge',
@@ -100,14 +114,22 @@ with DAG(
         # airflow container or on host.
         mounts=[
             Mount(
-                source=os.getenv("HOST_BASE") + "citycat/input_output/" + start_date,
-                target="/app",
+                source=os.getenv("HOST_BASE") + "pt2matsim/input/" + start_date,
+                target="/data/in",
                 type='bind',
                 read_only=True
             ),
+            Mount(
+                source=os.getenv("HOST_BASE") + "pt2matsim/output/" + start_date,
+                target="/data/out",
+                type='bind'
+            ),
         ],
         mount_tmp_dir=False,
-        command="-c 1 -r 1"
+        environment={
+            'CRS': 'EPSG:{{ params.PT2MATSIM_datavalue_crs }}',
+            'GTFS_SERVICE_ID': '{{ params.PT2MATSIM_datavalue_GtfsServiceId }}'
+        },
     )
 
     post_final_data = PythonOperator(
@@ -118,7 +140,7 @@ with DAG(
         dag=dag,
         op_kwargs={
             "bucket": output_bucket,
-            "src": airflow_input_output_run,
+            "src": airflow_output_run,
             "dst": output_path,
         }
     )
@@ -145,5 +167,5 @@ with DAG(
     )
 
     # SEQUENCE
-    record_run_start >> setup_environment >> stage_data >> prepare_image >> run_citycat >> post_final_data >> record_run_end >> dag_run_state
+    record_run_start >> setup_environment >> stage_data >> configure_config >> prepare_image >> run_pt2matsim >> post_final_data >> record_run_end >> dag_run_state
     prepare_image >> periodic_post >> post_final_data

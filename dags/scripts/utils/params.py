@@ -347,3 +347,40 @@ class CityCat(BaseParams):
             type="string",
             title="[CityCAT] GreenAreas path",
         )
+
+class Pt2Matsim(BaseParams):
+    def __init__(self):
+        super().__init__()
+
+        self.PT2MATSim_selection_image = Param(
+            "pt2-matsim:ec8d5a8abbc4c04f82f998793d47fbdf26b4e7db",
+            type="string",
+            title="[PT2MATSim] Docker Image",
+            description="Select a PT2MATSim Docker image, as <name:tag>. See available images or upload your own (in .tar format) at docker-images bucket.",
+        )
+        self.PT2MATSim_datapath_OsmConfig = Param(
+            type="string",
+            title="[PT2MATSim] OsmConfig.xml path",
+        )
+        self.PT2MATSim_datapath_PTMapperConfig = Param(
+            type="string",
+            title="[PT2MATSim] PTMapperConfig.xml path",
+        )
+        self.PT2MATSim_datapath_osmFile = Param(
+            type="string",
+            title="[PT2MATSim] path to .osm file",
+        )
+        self.PT2MATSim_datadir_GTFS = Param(
+            type="string",
+            title="[PT2MATSim] directory to GTFS files (agency.txt, calendar.txt, routes.txt, stop_times.txt, stops.txt, trips.txt)",
+        )
+        self.PT2MATSIM_datavalue_crs = Param(
+            "27700",
+            type="string",
+            title="[PT2MATSim] CRS"
+        )
+        self.PT2MATSIM_datavalue_GtfsServiceId = Param(
+            "dayWithMostTrips",
+            type="string",
+            title="[PT2MATSim] Specify GTFS_SERVICE_ID method: https://github.com/matsim-org/pt2matsim/wiki/Creating-an-unmapped-MATSim-transit-schedule"
+        )
