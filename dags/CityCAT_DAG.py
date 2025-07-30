@@ -101,9 +101,9 @@ with DAG(
         mounts=[
             Mount(
                 source=os.getenv("HOST_BASE") + "citycat/input_output/" + start_date,
-                target="/app",
+                target="/data",
                 type='bind',
-                read_only=True
+                read_only=False
             ),
         ],
         mount_tmp_dir=False,
