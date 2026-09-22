@@ -1,7 +1,7 @@
 # DAReflow
 DAReflow is a prototype orchestration platform built to support the DARe Integrated Modelling Platform (IMP). It uses Apache Airflow to orchestrate interconnected modelling workflows, datasets, and data transformations.
 
-![DAReflow Architecture](https://github.com/DAReHub/DAReflow/images/architecture.drawio.png?raw=true)
+![DAReflow Architecture](https://github.com/DAReHub/DAReflow/blob/main/images/architecture.drawio.png?raw=true)
 
 ## About
 
