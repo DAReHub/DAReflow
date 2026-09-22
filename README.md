@@ -33,7 +33,6 @@ DAReflow is a proof-of-concept rather than a complete implementation of the DARe
 
 
 ## How to use this Repository
-
 Run using Docker and follow the example DAGs included to structure your own.
 
 ### Run using Docker
@@ -57,6 +56,7 @@ Reload airflow and dependencies while keeping persistent data (e.g. an update to
     docker compose up -d
 
 ### DAGs
-
+**todo**
 
 ### Specifying Inputs
+**todo**
