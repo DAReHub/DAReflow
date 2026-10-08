@@ -55,8 +55,42 @@ Reload airflow and dependencies while keeping persistent data (e.g. an update to
     docker compose up airflow-init
     docker compose up -d
 
-### DAGs
-**todo**
+## DAGs
+### Overview
+DAReflow represents individual modelling workflows as Apache Airflow DAGs. Each DAG defines the sequence of operations required to configure, execute, and manage a model, including input staging, model execution, output handling, and metadata recording.
 
-### Specifying Inputs
-**todo**
+The repository contains example DAGs demonstrating how individual models can be integrated into the DAReflow orchestration framework.
+
+| DAG                      | Description                                                |
+|--------------------------|------------------------------------------------------------|
+| MATSim_DAG.py            | Executes a MATSim transport simulation                     |
+| PT2matsim_DAG.py         | Executes PT2-MATSim public transport processing            |
+| CityCAT_DAG.py           | Executes a CityCAT hydrodynamic simulation                 |
+| UDM_DAG.py               | Executes Urban Development Model                           |
+| floodEvent_DAG.py        | Executes DARe floodEvent module code                       |
+| floodEvent_MATSim_DAG.py | Executes DARe floodEvent and MATSim DAGs in sequence |
+
+### MATSim DAG
+
+![MATSim DAG Graph](https://github.com/DAReHub/DAReflow/blob/main/images/MATSim_DAG_graph.png?raw=true)
+
+The MATSim DAG demonstrates the typical workflow used by DAReflow:
+
+1. Record the start of the run in PostgreSQL.
+2. Create temporary input and output directories.
+3. Retrieve input data from MinIO.
+4. Configure the MATSim scenario.
+5. Select and prepare the required Docker image.
+6. Execute MATSim using the selected container.
+7. Periodically upload generated outputs to MinIO.
+8. Upload the final outputs to MinIO.
+9. Record metadata for the completed run.
+10. Determine the final DAG run state.
+
+Model parameters are presented to the user when a DAG is triggered and can also be populated dynamically when DAGs are executed sequentially.
+
+MATSim Docker images are selected using <name:tag>. Images not already available on the Airflow host are retrieved from MinIO and loaded into Docker, allowing users to upload and deploy model images independently of the orchestration host.
+
+Because model runs can be long-running, output data is periodically copied to MinIO while the model is executing. This preserves intermediate results in the event of a failure. Post-processing and run-state tasks use ALL_DONE trigger rules so that execution status and available outputs can still be recorded when an upstream task fails.
+
+Run metadata, including configuration, Docker image, Git commit, task states, and output location, is stored in PostgreSQL to support both operational monitoring and model provenance.
