@@ -30,7 +30,7 @@ Git provides version control for the orchestration system and its associated com
 DAReflow is a proof-of-concept rather than a complete implementation of the DARe IMP. It demonstrates how orchestration, containerisation, object storage, metadata management, and version control can be combined to support complex integrated modelling workflows.
 
 
-## Setup and Run
+## Setup
 ### Files to Configure
 #### docker-compose.yaml
 The services provided with docker-compose.yaml are largely standard for an Airflow instance. However, some changes have been made including modifications to mounts. 
@@ -54,7 +54,7 @@ The database connections used in this repository.
 The variables used in this repository.
 
 
-### Run using Docker
+## Run using Docker
 Initial build:
 
     docker compose build
@@ -119,4 +119,9 @@ Run metadata, including configuration, Docker image, Git commit, task states, an
 #### Combined DAGs
 floodEvent_MATSim_DAG.py is an example of executing DAGs in a sequence, in this case running  floodEvent_DAG.py then MATSim_DAG.py. The graph representation here appears much simpler, only showing a single node operator for each DAG. Each node operator acts as a parent and remote trigger for the DAG it represents.
 
-Upon executing the combined DAG, the user is presented with a combined set of input parameters for all DAGs, minus: those which will be dynamically generated and passed from one to the next (e.g. output data name and location), and those values which apply to multiple DAGs and are repetitions. This logic is controlled through a heirarchy of classes defined in `params.py`.
+Upon executing the combined DAG, the user is presented with a combined set of input parameters for all DAGs, minus: those which will be dynamically generated and passed from one to the next (e.g. output data name and location), and those values which apply to multiple DAGs and are repetitions. This logic is controlled via multiple inheritance using python classes defined in `params.py`.
+
+### Config Parameters
+Each DAG has a corresponding set of parameters that users provide when triggering a run. These parameters are defined as classes in params.py.
+
+When developing a new DAG, create a corresponding parameter class that inherits from `BaseParams` method. Ensure that `super().__init__()` is called during initialisation and define the inputs required by the DAG. Additional inheritance can be used to reuse parameters shared across multiple DAGs.
