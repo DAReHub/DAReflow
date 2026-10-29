@@ -125,3 +125,8 @@ Upon executing the combined DAG, the user is presented with a combined set of in
 Each DAG has a corresponding set of parameters that users provide when triggering a run. These parameters are defined as classes in params.py.
 
 When developing a new DAG, create a corresponding parameter class that inherits from `BaseParams` method. Ensure that `super().__init__()` is called during initialisation and define the inputs required by the DAG. Additional inheritance can be used to reuse parameters shared across multiple DAGs.
+
+### Model Docker Images
+Check out the following DARe repositories for building your own MATSim and CityCAT images:
+- https://github.com/DAReHub/matsim-tyne-and-wear
+- https://github.com/DAReHub/CityCAT-docker
